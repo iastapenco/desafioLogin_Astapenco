@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { userModel } from "../dao/models/users.models.js";
+import UserManager from "../dao/managers_mongo/userManagerMongo.js";
 
 const userRouter = Router();
+const userManager = new UserManager();
 
 userRouter.get("/", async (req, res) => {
   try {
-    const users = await userModel.find();
+    const users = await userManager.usersList();
     res.status(200).send({ response: "Ok", mensaje: users });
   } catch (error) {
     res.status(400).send({ response: "Error", mensaje: error });
@@ -15,7 +16,7 @@ userRouter.get("/", async (req, res) => {
 userRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await userModel.findById(id);
+    const user = await userManager.findUserById(id);
     if (user) res.status(200).send({ response: "Ok", mensaje: user });
     else res.status(404).send({ response: "Error", mensaje: "User not found" });
   } catch (error) {
@@ -26,14 +27,14 @@ userRouter.get("/:id", async (req, res) => {
 userRouter.post("/", async (req, res) => {
   const { first_name, last_name, age, email, password } = req.body;
   try {
-    const respuesta = await userModel.create({
+    const newUser = await userManager.createUser(
       first_name,
       last_name,
       age,
       email,
-      password,
-    });
-    res.status(200).send({ response: "Ok", mensaje: respuesta });
+      password
+    );
+    res.status(200).send({ response: "Ok", mensaje: newUser });
   } catch (error) {
     res.status(400).send({ response: "Error", mensaje: error });
   }
@@ -43,13 +44,14 @@ userRouter.put("/:id", async (req, res) => {
   const { id } = req.params;
   const { first_name, last_name, age, email, password } = req.body;
   try {
-    const user = await userModel.findByIdAndUpdate(id, {
+    const user = await userManager.updateUserById(
+      id,
       first_name,
       last_name,
       age,
       email,
-      password,
-    });
+      password
+    );
     if (user)
       res.status(200).send({ response: "Usuario actualizado", mensaje: user });
     else
@@ -64,9 +66,13 @@ userRouter.put("/:id", async (req, res) => {
 userRouter.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await userModel.findByIdAndDelete(id);
-    if (user)
-      res.status(200).send({ response: "Ok", mensaje: "Usuario eliminado" });
+    const respuesta = await userManager.deleteUserById(id);
+    if (respuesta)
+      res.status(200).send({
+        response: "Ok",
+        mensaje: "Usuario eliminado",
+        usuarios: respuesta,
+      });
     else res.status(404).send({ response: "Error", mensaje: "User not found" });
   } catch (error) {
     res.status(400).send({ response: "Error", mensaje: error });

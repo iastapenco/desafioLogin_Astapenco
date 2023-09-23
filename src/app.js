@@ -55,11 +55,11 @@ app.use(
         useNewUrlParser: true,
         useUnifiedTopology: true,
       },
-      ttl: 60,
+      ttl: 300,
     }),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   })
 );
 

@@ -1,13 +1,25 @@
-const login_form = document.getElementById("login_form");
 Socket = io();
+const login_form = document.getElementById("login_form");
 
 login_form.addEventListener("submit", (e) => {
   e.preventDefault();
-  let userLogin = Object.fromEntries(new FormData(e.target));
-  console.log(userLogin);
+  const userLogin = Object.fromEntries(new FormData(e.target));
   e.target.reset();
-  fetch("/api/sessions/login", {
+  fetch("http://localhost:8080/api/sessions/login", {
     method: "POST",
-    body: userLogin,
-  });
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(userLogin),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Hubo un error al procesar la solicitud");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      sessionStorage.setItem("dataUser", JSON.stringify(data));
+      window.location.href = "/products";
+    });
 });

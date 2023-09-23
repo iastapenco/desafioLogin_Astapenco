@@ -1,5 +1,6 @@
 import { Router } from "express";
 import SessionManager from "../dao/managers_mongo/sessionManagerMongo.js";
+import UserManager from "../dao/managers_mongo/userManagerMongo.js";
 
 const sessionRouter = Router();
 const sessionManager = new SessionManager();
@@ -17,11 +18,12 @@ sessionRouter.post("/login", async (req, res) => {
     if (req.session.login) {
       res.status(200).send({ resultado: "Login ya existente" });
     }
-    const validUser = await sessionManager.validUser(email, password);
+    const user = await sessionManager.validUser(email, password);
 
-    if (validUser) {
+    if (user) {
       req.session.login = true;
-      res.redirect("/products", 200, { resultado: "Login válido" });
+      const dataUser = await sessionManager.findUser(email);
+      res.json({ data: dataUser });
     } else {
       res
         .status(401)
@@ -36,9 +38,7 @@ sessionRouter.get("/logout", async (req, res) => {
   if (req.session.login) {
     req.session.destroy();
   }
-  res.redirect("/api/sessions/login", 200, {
-    resultado: "Usuario deslogueado",
-  });
+  res.json({ res: "ok" });
 });
 
 export default sessionRouter;
