@@ -5,13 +5,13 @@ document.getElementById("btn-logout").addEventListener("click", function () {
     if (!response.ok) {
       throw new Error("HUbo un error en la solicitud");
     } else {
-      sessionStorage.clear();
+      localStorage.removeItem("dataUser");
       window.location.href = "/api/sessions/login";
     }
   });
 });
 
-const dataUser = JSON.parse(sessionStorage.getItem("dataUser"));
+const dataUser = JSON.parse(localStorage.getItem("dataUser"));
 
 if (dataUser != {}) {
   const alert = document.getElementById("alert");

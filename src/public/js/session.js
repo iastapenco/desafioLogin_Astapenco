@@ -19,7 +19,7 @@ login_form.addEventListener("submit", (e) => {
       return res.json();
     })
     .then((data) => {
-      sessionStorage.setItem("dataUser", JSON.stringify(data));
+      localStorage.setItem("dataUser", JSON.stringify(data));
       window.location.href = "/products";
     });
 });

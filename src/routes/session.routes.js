@@ -1,6 +1,5 @@
 import { Router } from "express";
 import SessionManager from "../dao/managers_mongo/sessionManagerMongo.js";
-import UserManager from "../dao/managers_mongo/userManagerMongo.js";
 
 const sessionRouter = Router();
 const sessionManager = new SessionManager();
